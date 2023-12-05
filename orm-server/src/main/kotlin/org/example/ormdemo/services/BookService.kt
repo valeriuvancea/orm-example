@@ -16,11 +16,12 @@ class BookService(
 ): BaseService<BookRepository, Book, CreateBookRequest, UpdateBookRequest>(bookRepository) {
 
     override fun entityCreator(createRequest: CreateBookRequest): Book {
-        return Book(createRequest.title)
+        return Book(createRequest.title, createRequest.year)
     }
 
     override fun updateEntity(entity: Book, updateRequest: UpdateBookRequest) {
         entity.title = updateRequest.title
+        entity.year = updateRequest.year
     }
 
     override fun create(createBookRequest: CreateBookRequest): Book {

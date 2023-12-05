@@ -1,10 +1,12 @@
 package org.example.ormdemo.configuration
 
+import org.example.ormdemo.entities.BaseEntity
 import org.example.ormdemo.repositories.PersonRepository
-import org.hibernate.boot.model.naming.PhysicalNamingStrategy
-import org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+import org.hibernate.cfg.AvailableSettings
 import org.hibernate.dialect.PostgreSQL95Dialect
+import org.postgresql.Driver
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.PropertySource
@@ -16,7 +18,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.annotation.EnableTransactionManagement
-import java.util.Properties
+import java.util.*
 import javax.sql.DataSource
 
 
@@ -25,9 +27,11 @@ import javax.sql.DataSource
 @EnableTransactionManagement
 class ApplicationConfiguration {
     @Bean
-    fun dataSource(): DataSource {
+    fun dataSource(
+        @Qualifier("databaseDriverName") databaseDriverName: String
+    ): DataSource {
         val dataSource = DriverManagerDataSource()
-        dataSource.setDriverClassName("org.postgresql.Driver")
+        dataSource.setDriverClassName(databaseDriverName)
         dataSource.username = "admin"
         dataSource.password = "admin"
         dataSource.url = "jdbc:postgresql://localhost:5432/db?createDatabaseIfNotExist=true"
@@ -37,11 +41,12 @@ class ApplicationConfiguration {
     @Bean
     fun entityManagerFactory(
         dataSource: DataSource,
-        @Qualifier("hibernateProperties") hibernateProperties: Properties
+        @Qualifier("hibernateProperties") hibernateProperties: Properties,
+        @Qualifier("packageToScaForEntities") packageToScaForEntities: Array<String>,
     ): LocalContainerEntityManagerFactoryBean {
         val localContainerEntityManagerFactoryBean = LocalContainerEntityManagerFactoryBean()
         localContainerEntityManagerFactoryBean.dataSource = dataSource
-        localContainerEntityManagerFactoryBean.setPackagesToScan("org.example.ormdemo.entities")
+        localContainerEntityManagerFactoryBean.setPackagesToScan(*packageToScaForEntities)
         val vendorAdapter: JpaVendorAdapter = HibernateJpaVendorAdapter()
         localContainerEntityManagerFactoryBean.jpaVendorAdapter = vendorAdapter
         localContainerEntityManagerFactoryBean.setJpaProperties(hibernateProperties)
@@ -63,16 +68,28 @@ class ApplicationConfiguration {
     @Bean("hibernateProperties")
     fun hibernateProperties(): Properties {
         val properties = Properties()
-        properties.setProperty("hibernate.hbm2ddl.auto", "update")
-        properties.setProperty("hibernate.dialect", PostgreSQL95Dialect::class.java.name)
-        properties.setProperty("hibernate.show_sql", "true")
-        properties.setProperty("hibernate.format_sql", "true")
-        properties.setProperty("hibernate.naming.physical-strategy", PhysicalNamingStrategyStandardImpl::class.java.name)
+        properties.setProperty(AvailableSettings.DIALECT, PostgreSQL95Dialect::class.java.name)
         return properties
+    }
+
+    @Bean("databaseDriverName")
+    fun databaseDriverName(): String {
+        return Driver::class.java.name
+    }
+
+    @Bean("packageToScaForEntities")
+    fun packageToScaForEntities(): Array<String> {
+        return arrayOf(BaseEntity::class.java.packageName)
     }
 
     @Bean
     fun personRepository(): PersonRepository {
         return PersonRepository()
+    }
+
+    // disable automatic flyway migration
+    @Bean
+    fun flywayMigrationStrategy(): FlywayMigrationStrategy {
+        return FlywayMigrationStrategy { _ -> }
     }
 }
