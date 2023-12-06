@@ -49,8 +49,9 @@ class DatabaseManagementService(
 
         if (migrationsFolderUrl != null) {
             val migrationFolderPath = Paths.get(migrationsFolderUrl.toURI())
-            val filename =
+            var filename =
                 "$migrationFolderPath/V$version" + "__${name.lowercase().replace(" ", "_")}.sql"
+            filename =  filename.replace ("target/classes", "src/main/resources")
             val schemaUpdate = SchemaUpdate()
             schemaUpdate.setFormat(true)
             schemaUpdate.setDelimiter(";")
@@ -82,7 +83,7 @@ class DatabaseManagementService(
 
     private fun getSchemaOutput(schemaGeneratorMethod: () -> Unit): String {
         val result = outputCaptureService.captureOutput(schemaGeneratorMethod)
-        var doubleNewLineCharacterIndex = result.indexOf(System.lineSeparator() + System.lineSeparator())
+        val doubleNewLineCharacterIndex = result.indexOf(System.lineSeparator() + System.lineSeparator())
         if (doubleNewLineCharacterIndex != -1) {
             return result.substring(doubleNewLineCharacterIndex)
         }
