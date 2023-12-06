@@ -82,7 +82,7 @@ class DatabaseManagementService(
 
     private fun getSchemaOutput(schemaGeneratorMethod: () -> Unit): String {
         val result = outputCaptureService.captureOutput(schemaGeneratorMethod)
-        val doubleNewLineCharacterIndex = result.indexOf("\n\r")
+        var doubleNewLineCharacterIndex = result.indexOf(System.lineSeparator() + System.lineSeparator())
         if (doubleNewLineCharacterIndex != -1) {
             return result.substring(doubleNewLineCharacterIndex)
         }

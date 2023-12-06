@@ -6,6 +6,6 @@ import jakarta.persistence.Entity
 @Entity
 data class Book(
     @Column(name = "title", nullable = false) var title: String,
-    @Column(name = "year", nullable = false) var year: Int,
+    @Column(name = "release_year", nullable = false) var releaseYear: Int,
     override val id: Long? = null,
 ) : BaseEntity(id)

@@ -14,22 +14,22 @@ abstract class BaseController<
         U : UpdateRequest>(private val service: S) {
 
     @GetMapping("/{id}")
-    fun getById(@PathVariable id: Long): E {
+    open fun getById(@PathVariable id: Long): E {
         return service.getById(id)
     }
 
     @PutMapping
-    fun create(@Valid @RequestBody request: C): E {
+    open fun create(@Valid @RequestBody request: C): E {
         return service.create(request)
     }
 
     @PostMapping
-    fun update(@Valid @RequestBody request: U): E {
+    open fun update(@Valid @RequestBody request: U): E {
         return service.update(request)
     }
 
     @DeleteMapping("/{id}")
-    fun delete(@PathVariable id: Long) {
+    open fun delete(@PathVariable id: Long) {
         service.delete(id)
     }
 }

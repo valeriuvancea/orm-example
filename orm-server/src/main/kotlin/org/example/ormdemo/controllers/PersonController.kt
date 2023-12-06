@@ -14,6 +14,10 @@ import org.springframework.web.bind.annotation.RestController
 class PersonController(private val personService: PersonService) :
     BaseController<PersonService, Person, CreatePersonRequest, UpdatePersonRequest>(personService) {
 
+    override fun getById(@PathVariable id: Long): Person {
+        return personService.getByIdWithBooks(id)
+    }
+
     @GetMapping("/byName/{name}")
     fun getPersonByName(@PathVariable name: String): Person {
         return personService.getByName(name)

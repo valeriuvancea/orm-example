@@ -24,7 +24,7 @@ class PersonService(
         entity.age = updateRequest.age
     }
 
-    override fun getById(id: Long): Person {
+    fun getByIdWithBooks(id: Long): Person {
         return personRepository.getByIdWithBooks(id) ?: throw EntityNotFoundException(id, Person::class.java)
     }
 
