@@ -17,6 +17,7 @@ class DatabaseSchemaAdminController(private val databaseManagementService: Datab
         return when(schemaInformationType) {
             SchemaInformationType.CREATE -> databaseManagementService.getCreateSchema()
             SchemaInformationType.UPDATE -> databaseManagementService.getUpdateSchema()
+            SchemaInformationType.VALIDATE -> databaseManagementService.getValidateSchema()
         }
     }
 

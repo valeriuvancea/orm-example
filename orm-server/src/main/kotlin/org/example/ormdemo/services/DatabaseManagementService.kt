@@ -9,6 +9,7 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder
 import org.hibernate.cfg.AvailableSettings
 import org.hibernate.tool.hbm2ddl.SchemaExport
 import org.hibernate.tool.hbm2ddl.SchemaUpdate
+import org.hibernate.tool.hbm2ddl.SchemaValidator
 import org.hibernate.tool.schema.TargetType
 import org.reflections.Reflections
 import org.springframework.beans.factory.annotation.Qualifier
@@ -42,6 +43,12 @@ class DatabaseManagementService(
                 metadata
             )
         }
+    }
+
+    fun getValidateSchema(): String {
+        val schemaValidator = SchemaValidator()
+        schemaValidator.validate(metadata)
+        return "Schema is valid!"
     }
 
     fun writeUpdateSchema(name: String, version: String): String {
